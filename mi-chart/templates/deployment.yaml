@@ -1,31 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mi-deployment-3
-  namespace: lpintofsgrp-dev
+  name: mi-deployment-{{ .Chart.Name }}
+  namespace: {{ .Values.namespace }}
   labels:
-    app: {{ .Values.labels.app }}
+    app: {{ .Chart.Name }}
     areanegocio: tecnologia
 spec:
-  replicas: {{ .Values.replicas.minReplicas }}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ .Values.labels.app }}
+      app: {{ .Chart.Name }}
   template:
     metadata:
       labels:
-        app: {{ .Values.labels.app }}
+        app: {{ .Chart.Name }}
     spec:
       containers:
         - name: contenedor-principal
-          image: "{{ .Values.containers.image }}:build-{{ .Values.containers.tag }}"
+          image: "{{ .Values.container.image }}:{{ .Values.container.tag }}"
           imagePullPolicy: Always
           ports:
-            - containerPort: {{ .Values.containers.port }}
+            - containerPort: {{ .Values.container.port }}
           resources:
-            requests:
-              cpu: {{ .Values.resources.cpu }}
-              memory: {{ .Values.resources.memory }}
-            limits:
-              cpu: {{ .Values.resources.limit_cpu }}
-              memory: {{ .Values.resources.limit_memory }}
+            {{- toYaml .Values.resources | nindent 12 }}
+          startupProbe:
+            httpGet:
+              path: /startup
+              port: {{ .Values.container.port }}
+            failureThreshold: 5
+            periodSeconds: 10

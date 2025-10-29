@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: mi-servicio-3-{{ .Values.labels.app }}
-  namespace: lpintofsgrp-dev  # Asegúrate de que coincida con tu Deployment
+  name: mi-servicio-{{ .Values.name }}
+  namespace: {{ .Values.namespace }}  # Asegúrate de que coincida con tu Deployment
 spec:
   selector:
-    app: {{ .Values.labels.app }}  # Debe coincidir con las labels del Deployment
+    app: {{ .Values.name }}  # Debe coincidir con las labels del Deployment
   ports:
     - protocol: TCP
-      port: 4000        # Puerto expuesto por el Service
-      targetPort: {{ .Values.containers.port }}  # Puerto interno del contenedor
-  type: ClusterIP     # Cambia a NodePort o LoadBalancer si quieres acceso externo
+      port: {{ .Values.service.port }}        # Puerto del Service
+      targetPort: {{ .Values.container.port }}  # Puerto del contenedor
+  type: {{ .Values.service.type }}     # Cambia a NodePort o LoadBalancer si quieres acceso externo
