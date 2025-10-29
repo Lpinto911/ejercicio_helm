@@ -1,3 +1,5 @@
+name: my-app
+
 # Kubernetes namespace to install into (can be overridden)
 namespace: lpintofsgrp-dev
 
