@@ -25,15 +25,18 @@ jobs:
         with:
           version: v3.12.0
 
-      - name: Log in to Docker Hub (for Helm OCI)
-        run: |
-          helm registry login registry-1.docker.io \
-            --username ${{ secrets.DOCKER_USERNAME }} \
-            --password ${{ secrets.DOCKERHUB_TOKEN }}
-
       - name: Package and Push Helm Chart
         run: |
+          # Sustituye la variable {{ version }} en el Chart.yaml con el número de ejecución
           sed -i "s|{{ version }}|${{ github.run_number }}|g" ./mi-chart/Chart.yaml
           cat ./mi-chart/Chart.yaml
+
+          # Empaqueta el chart
           helm package ./mi-chart
+
+          # Login y push en el mismo bloque
+          echo "${{ secrets.DOCKERHUB_TOKEN }}" | helm registry login registry-1.docker.io \
+            --username ${{ secrets.DOCKER_USERNAME }} --password-stdin
+
+          # Publica el chart en Docker Hub (OCI)
           helm push ./mi-chart-${{ github.run_number }}.tgz oci://registry-1.docker.io/lpintofsgrp
