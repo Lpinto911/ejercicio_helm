@@ -28,8 +28,7 @@ jobs:
           version: v3.12.0
 
       - name: Deploy files
-        run: |
-          
+        run: |          
           sed -i "s|{{ version }}|${{ github.run_number }}|g" ./mi-chart/Chart.yaml
           cat ./mi-chart/Chart.yaml
           helm package ./mi-chart
